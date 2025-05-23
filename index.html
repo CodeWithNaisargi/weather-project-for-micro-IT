@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="Weather forecast application with beautiful animations" />
+    <meta name="theme-color" content="#222222" />
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://api.openweathermap.org" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="weather-container">
+      <div class="weather-bg"></div>
+      <div class="card">
+        <div class="search">
+          <input
+            type="text"
+            placeholder="Enter the city name"
+            spellcheck="false"
+            aria-label="Enter city name"
+          />
+          <button aria-label="Search">
+            <img src="images/search.png" alt="Search" />
+          </button>
+        </div>
+        <div class="weather">
+          <img src="images/clouds.png" class="weatherIcon" alt="Weather condition" />
+          <h1 class="temp">22°C</h1>
+          <h2 class="city">New York</h2>
+          <div class="details">
+            <div class="col">
+              <img src="images/humidity.png" alt="Humidity" />
+              <div>
+                <p class="humidity">50%</p>
+                <p>Humidity</p>
+              </div>
+            </div>
+            <div class="col">
+              <img src="images/wind.png" alt="Wind speed" />
+              <div>
+                <p class="wind">15 km/h</p>
+                <p>Wind Speed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5-day forecast section -->
+      <div class="forecast-container">
+        <h3>5-Day Forecast</h3>
+        <div class="forecast-cards">
+          <!-- Forecast cards will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiKey = "70e30cd6dfee113ea9c00eff3cce4343";
+      const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+      const forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?units=metric&q=";
+
+      const searchBox = document.querySelector(".search input");
+      const searchBtn = document.querySelector(".search button");
+      const weatherIcon = document.querySelector(".weatherIcon");
+      const weatherBg = document.querySelector(".weather-bg");
+      const forecastContainer = document.querySelector(".forecast-cards");
+
+      function createSnowflakes() {
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg snowy';
+        for (let i = 0; i < 100; i++) {
+          const snowflake = document.createElement('div');
+          snowflake.className = 'snowflake';
+          snowflake.style.left = Math.random() * 100 + '%';
+          snowflake.style.width = snowflake.style.height = (Math.random() * 4 + 2) + 'px';
+          snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+          snowflake.style.animationDuration = (Math.random() * 5 + 8) + 's';
+          snowflake.style.animationDelay = (Math.random() * -10) + 's';
+          weatherBg.appendChild(snowflake);
+        }
+      }
+
+      function createClouds() {
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg cloudy';
+        for (let i = 0; i < 8; i++) {
+          const cloud = document.createElement('div');
+          cloud.className = 'cloud';
+          cloud.style.top = (Math.random() * 60) + '%';
+          cloud.style.width = (Math.random() * 100 + 100) + 'px';
+          cloud.style.height = (Math.random() * 30 + 30) + 'px';
+          cloud.style.animationDuration = (Math.random() * 30 + 40) + 's';
+          cloud.style.animationDelay = (Math.random() * -30) + 's';
+          weatherBg.appendChild(cloud);
+        }
+      }
+
+      function createSunlight() {
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg sunny';
+        
+        const sunlight = document.createElement('div');
+        sunlight.className = 'sunlight';
+        
+        const sunCore = document.createElement('div');
+        sunCore.className = 'sun-core';
+        
+        const sunRay = document.createElement('div');
+        sunRay.className = 'sun-ray';
+        
+        weatherBg.appendChild(sunlight);
+        weatherBg.appendChild(sunCore);
+        weatherBg.appendChild(sunRay);
+      }
+
+      function createRain() {
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg rainy';
+        for (let i = 0; i < 100; i++) {
+          const raindrop = document.createElement('div');
+          raindrop.className = 'raindrop';
+          raindrop.style.left = Math.random() * 100 + '%';
+          raindrop.style.height = (Math.random() * 20 + 30) + 'px';
+          raindrop.style.opacity = Math.random() * 0.4 + 0.4;
+          raindrop.style.animationDuration = (Math.random() * 0.4 + 0.8) + 's';
+          raindrop.style.animationDelay = (Math.random() * -2) + 's';
+          weatherBg.appendChild(raindrop);
+        }
+      }
+
+      function createStorm() {
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg stormy';
+        // Add rain
+        createRain();
+        // Add lightning effect
+        const lightning = document.createElement('div');
+        lightning.className = 'lightning';
+        weatherBg.appendChild(lightning);
+      }
+
+      // Function to format date
+      function formatDate(timestamp) {
+        const date = new Date(timestamp * 1000);
+        return {
+          day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()],
+          date: date.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()]
+        };
+      }
+
+      // Function to get weather icon based on condition and time
+      function getWeatherIcon(condition, icon) {
+        if (icon.includes('n')) { // Night time
+          if (condition.includes("clear")) return "images/clear.png";
+          if (condition.includes("cloud")) return "images/clouds.png";
+        }
+        if (condition.includes("cloud")) return "images/clouds.png";
+        if (condition.includes("rain")) return "images/rain.png";
+        if (condition.includes("clear")) return "images/clear.png";
+        if (condition.includes("snow")) return "images/snow.png";
+        if (condition.includes("mist")) return "images/mist.png";
+        if (condition.includes("drizzle")) return "images/rain.png";
+        if (condition.includes("thunderstorm")) return "images/storm.png";
+        return "images/clouds.png";
+      }
+
+      // Function to update forecast
+      async function updateForecast(cityName) {
+        try {
+          const response = await fetch(`${forecastUrl}${encodeURIComponent(cityName)}&appid=${apiKey}`);
+          const data = await response.json();
+
+          if (data.cod === "200") {
+            // Clear previous forecast
+            forecastContainer.innerHTML = '';
+
+            // Process forecast data
+            const dailyForecasts = {};
+            
+            // Group forecasts by day and calculate min/max temperatures
+            data.list.forEach(item => {
+              const date = new Date(item.dt * 1000).toLocaleDateString();
+              if (!dailyForecasts[date]) {
+                dailyForecasts[date] = {
+                  dt: item.dt,
+                  temp_min: item.main.temp_min,
+                  temp_max: item.main.temp_max,
+                  humidity: item.main.humidity,
+                  wind: item.wind.speed,
+                  weather: item.weather[0],
+                  rain: item.rain ? item.rain['3h'] : 0,
+                  counts: 1
+                };
+              } else {
+                const forecast = dailyForecasts[date];
+                forecast.temp_min = Math.min(forecast.temp_min, item.main.temp_min);
+                forecast.temp_max = Math.max(forecast.temp_max, item.main.temp_max);
+                forecast.humidity = (forecast.humidity + item.main.humidity) / 2;
+                forecast.wind = (forecast.wind + item.wind.speed) / 2;
+                forecast.rain += item.rain ? item.rain['3h'] : 0;
+                forecast.counts++;
+              }
+            });
+
+            // Create forecast cards for next 5 days
+            Object.values(dailyForecasts).slice(0, 5).forEach((day, index) => {
+              const { day: dayName, date: dateStr } = formatDate(day.dt);
+              const forecastCard = document.createElement('div');
+              forecastCard.className = 'forecast-card';
+              
+              forecastCard.innerHTML = `
+                <div class="forecast-day">${dayName}</div>
+                <div class="forecast-date">${dateStr}</div>
+                <img src="${getWeatherIcon(day.weather.main.toLowerCase(), day.weather.icon)}" 
+                     alt="${day.weather.description}">
+                <div class="forecast-temp">${Math.round((day.temp_max + day.temp_min) / 2)}°C</div>
+                <div class="forecast-temp-range">
+                  <span class="forecast-temp-min">${Math.round(day.temp_min)}°</span>
+                  <span class="forecast-temp-max">${Math.round(day.temp_max)}°</span>
+                </div>
+                <div class="forecast-details">
+                  <div class="forecast-detail">
+                    <span>Humidity</span>
+                    <span>${Math.round(day.humidity)}%</span>
+                  </div>
+                  <div class="forecast-detail">
+                    <span>Wind</span>
+                    <span>${day.wind.toFixed(1)} km/h</span>
+                  </div>
+                  ${day.rain > 0 ? `
+                  <div class="forecast-detail">
+                    <span>Rain</span>
+                    <span>${day.rain.toFixed(1)}mm</span>
+                  </div>
+                  ` : ''}
+                </div>
+              `;
+
+              forecastContainer.appendChild(forecastCard);
+
+              // Add animation class after a small delay
+              setTimeout(() => {
+                forecastCard.classList.add('show');
+              }, index * 100);
+            });
+          } else {
+            throw new Error(data.message || "Error fetching forecast");
+          }
+        } catch (error) {
+          console.error("Error fetching forecast:", error);
+          forecastContainer.innerHTML = '<p style="color: #fff;">Unable to load forecast data</p>';
+        }
+      }
+
+      // Error handling function
+      function handleError(error, cityName) {
+        console.error("Error:", error);
+        document.querySelector(".city").textContent = "City Not Found";
+        document.querySelector(".temp").textContent = "--°C";
+        document.querySelector(".humidity").textContent = "--%";
+        document.querySelector(".wind").textContent = "-- km/h";
+        weatherIcon.src = "images/clouds.png";
+        weatherBg.innerHTML = '';
+        weatherBg.className = 'weather-bg';
+        forecastContainer.innerHTML = '';
+      }
+
+      // Update error handling in checkWeather function
+      async function checkWeather(cityName) {
+        try {
+          if (!cityName.trim()) {
+            throw new Error("Please enter a city name");
+          }
+
+          const response = await fetch(`${apiUrl}${encodeURIComponent(cityName)}&appid=${apiKey}`);
+          const data = await response.json();
+
+          if (data.cod === 200) {
+            document.querySelector(".city").textContent = data.name;
+            document.querySelector(".temp").textContent = Math.round(data.main.temp) + "°C";
+            document.querySelector(".humidity").textContent = data.main.humidity + "%";
+            document.querySelector(".wind").textContent = data.wind.speed + " km/h";
+
+            const weatherMain = data.weather[0].main.toLowerCase();
+            weatherIcon.src = getWeatherIcon(weatherMain, data.weather[0].icon);
+
+            // Update background animations based on weather
+            if (weatherMain.includes("cloud")) {
+              createClouds();
+            } else if (weatherMain.includes("rain")) {
+              createRain();
+            } else if (weatherMain.includes("clear")) {
+              createSunlight();
+            } else if (weatherMain.includes("snow")) {
+              createSnowflakes();
+            } else if (weatherMain.includes("thunderstorm")) {
+              createStorm();
+            } else {
+              createClouds();
+            }
+
+            // Update forecast after current weather
+            updateForecast(cityName);
+          } else {
+            handleError(new Error(data.message || "City not found"), cityName);
+          }
+        } catch (error) {
+          handleError(error, cityName);
+        }
+      }
+
+      // Event Listeners
+      searchBtn.addEventListener("click", () => {
+        checkWeather(searchBox.value);
+      });
+
+      searchBox.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          checkWeather(searchBox.value);
+        }
+      });
+
+      // Prevent form submission
+      document.addEventListener('submit', (e) => e.preventDefault());
+
+      // Initial weather check with error handling
+      window.addEventListener('load', () => {
+        checkWeather("Bangalore").catch(error => {
+          handleError(error, "Bangalore");
+        });
+      });
+    </script>
+  </body>
+</html>
