@@ -7,7 +7,7 @@
     <meta name="description" content="Weather forecast application with beautiful animations" />
     <meta name="theme-color" content="#222222" />
     <title>Weather Forecast</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="preconnect" href="https://api.openweathermap.org" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -24,23 +24,23 @@
             aria-label="Enter city name"
           />
           <button aria-label="Search">
-            <img src="images/search.png" alt="Search" />
+            <img src="/images/search.png" alt="Search" />
           </button>
         </div>
         <div class="weather">
-          <img src="images/clouds.png" class="weatherIcon" alt="Weather condition" />
+          <img src="/images/clouds.png" class="weatherIcon" alt="Weather condition" />
           <h1 class="temp">22°C</h1>
           <h2 class="city">New York</h2>
           <div class="details">
             <div class="col">
-              <img src="images/humidity.png" alt="Humidity" />
+              <img src="/images/humidity.png" alt="Humidity" />
               <div>
                 <p class="humidity">50%</p>
                 <p>Humidity</p>
               </div>
             </div>
             <div class="col">
-              <img src="images/wind.png" alt="Wind speed" />
+              <img src="/images/wind.png" alt="Wind speed" />
               <div>
                 <p class="wind">15 km/h</p>
                 <p>Wind Speed</p>
@@ -156,17 +156,17 @@
       // Function to get weather icon based on condition and time
       function getWeatherIcon(condition, icon) {
         if (icon.includes('n')) { // Night time
-          if (condition.includes("clear")) return "images/clear.png";
-          if (condition.includes("cloud")) return "images/clouds.png";
+          if (condition.includes("clear")) return "/images/clear.png";
+          if (condition.includes("cloud")) return "/images/clouds.png";
         }
-        if (condition.includes("cloud")) return "images/clouds.png";
-        if (condition.includes("rain")) return "images/rain.png";
-        if (condition.includes("clear")) return "images/clear.png";
-        if (condition.includes("snow")) return "images/snow.png";
-        if (condition.includes("mist")) return "images/mist.png";
-        if (condition.includes("drizzle")) return "images/rain.png";
-        if (condition.includes("thunderstorm")) return "images/storm.png";
-        return "images/clouds.png";
+        if (condition.includes("cloud")) return "/images/clouds.png";
+        if (condition.includes("rain")) return "/images/rain.png";
+        if (condition.includes("clear")) return "/images/clear.png";
+        if (condition.includes("snow")) return "/images/snow.png";
+        if (condition.includes("mist")) return "/images/mist.png";
+        if (condition.includes("drizzle")) return "/images/rain.png";
+        if (condition.includes("thunderstorm")) return "/images/storm.png";
+        return "/images/clouds.png";
       }
 
       // Function to update forecast
@@ -264,7 +264,7 @@
         document.querySelector(".temp").textContent = "--°C";
         document.querySelector(".humidity").textContent = "--%";
         document.querySelector(".wind").textContent = "-- km/h";
-        weatherIcon.src = "images/clouds.png";
+        weatherIcon.src = "/images/clouds.png";
         weatherBg.innerHTML = '';
         weatherBg.className = 'weather-bg';
         forecastContainer.innerHTML = '';
